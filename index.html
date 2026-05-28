@@ -140,6 +140,11 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
   <div id="dbg"></div>
 </div>
 
+<!-- Telegram WebApp SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
 (function(){
 'use strict';
@@ -155,6 +160,69 @@ function dbg(msg){
 window.onerror=function(m,s,l,c,e){dbg('ERR: '+m+' @'+l+':'+c);return false;};
 
 try{
+
+// === FIREBASE ===
+var firebaseConfig={
+  apiKey:"AIzaSyBMkKXCsognToR4MOTFXDhplgIzfBaKKVw",
+  authDomain:"sixtho-f033b.firebaseapp.com",
+  databaseURL:"https://sixtho-f033b-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"sixtho-f033b",
+  storageBucket:"sixtho-f033b.firebasestorage.app",
+  messagingSenderId:"937317157626",
+  appId:"1:937317157626:web:fdabd9f9e91aa56235d743"
+};
+firebase.initializeApp(firebaseConfig);
+var db=firebase.database();
+
+// === TELEGRAM USER ===
+var tg=window.Telegram&&window.Telegram.WebApp;
+var TG_USER={id:'guest_'+Math.random().toString(36).slice(2,8),name:'@гость'};
+if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user){
+  var u=tg.initDataUnsafe.user;
+  TG_USER.id='tg_'+u.id;
+  TG_USER.name=u.username?'@'+u.username:(u.first_name||'Игрок');
+}
+if(tg)tg.expand(); // разворачиваем на весь экран
+
+// Сохранить результат в Firebase
+function saveResult(level,time){
+  var season=SEASON.key;
+  var entry={n:TG_USER.name,l:level,t:time,ts:Date.now()};
+  // Сохраняем в сезонный и вечный рейтинги
+  // Ключ — telegram id, чтобы перезаписывать предыдущий результат
+  var refS=db.ref('ratings/'+season+'/'+TG_USER.id);
+  var refA=db.ref('ratings/alltime/'+TG_USER.id);
+  // Обновляем только если результат лучше
+  refS.once('value',function(snap){
+    var prev=snap.val();
+    if(!prev||level>prev.l||(level===prev.l&&time<prev.t)){
+      refS.set(entry);
+    }
+  });
+  refA.once('value',function(snap){
+    var prev=snap.val();
+    if(!prev||level>prev.l||(level===prev.l&&time<prev.t)){
+      refA.set(entry);
+    }
+  });
+}
+
+// Загрузить рейтинг из Firebase
+function loadRating(key,cb){
+  db.ref('ratings/'+key).orderByChild('l').limitToLast(50).once('value',function(snap){
+    var rows=[];
+    snap.forEach(function(child){rows.push(child.val());});
+    // Сортируем: сначала по уровню убыв., потом по времени возр.
+    rows.sort(function(a,b){
+      if(b.l!==a.l)return b.l-a.l;
+      return (a.t||Infinity)-(b.t||Infinity);
+    });
+    cb(rows.slice(0,10));
+  },function(err){
+    dbg('Firebase err: '+err.message);
+    cb(null); // fallback на моковые данные
+  });
+}
 
 var LEVELS=[
   {lvl:1,total:2,correct:1,hints:0,hp:0},
@@ -237,35 +305,37 @@ function switchTab(t){
 }
 
 function renderRating(){
-  var data=curTab==='s'?MS:MA;
-  var rk=['🥇','🥈','🥉'],rc=['g','s','b'];
-
-  // Обновляем название вкладки сезона
   $('tb-s').textContent=SEASON.name+' '+SEASON.year;
-
-  var html='';
-  for(var i=0;i<data.length;i++){
-    var r=data[i];
-    var rank=i<3?rk[i]:String(i+1);
-    var tm=r.l===10?fmt(r.t):'—';
-    html+='<div class="rrow"><div class="rrk '+(rc[i]||'')+'">'+rank+'</div><div class="rnm">'+r.n+'</div><div class="rlv">'+r.l+'</div><div class="rtm">'+tm+'</div></div>';
-  }
-  $('r-ls').innerHTML=html;
-  var mr=$('r-mr');
-  if(bestLvl>0){
-    var myTime=levelTimes[bestLvl];
-    var bt=myTime!==undefined?' · '+fmt(myTime):'';
-    var pos=1;
-    for(var j=0;j<data.length;j++){
-      var d=data[j];
-      if(d.l>bestLvl){pos++;continue;}
-      if(d.l<bestLvl)continue;
-      if(myTime===undefined){pos++;continue;}
-      if(d.t<myTime){pos++;}
+  var key=curTab==='s'?SEASON.key:'alltime';
+  // Показываем лоадер
+  $('r-ls').innerHTML='<div style="text-align:center;padding:30px;color:#555;font-size:13px">Загрузка...</div>';
+  loadRating(key,function(rows){
+    var data=rows||(curTab==='s'?MS:MA); // fallback на моковые если Firebase недоступен
+    var rk=['🥇','🥈','🥉'],rc=['g','s','b'];
+    var html='';
+    for(var i=0;i<data.length;i++){
+      var r=data[i];
+      var rank=i<3?rk[i]:String(i+1);
+      var tm=r.t?fmt(r.t):'—';
+      html+='<div class="rrow"><div class="rrk '+(rc[i]||'')+'">'+rank+'</div><div class="rnm">'+r.n+'</div><div class="rlv">'+r.l+'</div><div class="rtm">'+tm+'</div></div>';
     }
-    mr.style.display='block';
-    mr.textContent='#'+pos+' · уровень '+bestLvl+bt;
-  }else{mr.style.display='none';}
+    $('r-ls').innerHTML=html||'<div style="text-align:center;padding:30px;color:#555;font-size:13px">Пока нет результатов</div>';
+    var mr=$('r-mr');
+    if(bestLvl>0){
+      var myTime=levelTimes[bestLvl];
+      var bt=myTime!==undefined?' · '+fmt(myTime):'';
+      var pos=1;
+      for(var j=0;j<data.length;j++){
+        var d=data[j];
+        if(d.l>bestLvl){pos++;continue;}
+        if(d.l<bestLvl)continue;
+        if(myTime===undefined){pos++;continue;}
+        if(d.t<myTime){pos++;}
+      }
+      mr.style.display='block';
+      mr.textContent='#'+pos+' · уровень '+bestLvl+bt;
+    }else{mr.style.display='none';}
+  });
 }
 
 function loadLevel(){
@@ -387,6 +457,8 @@ $('g-cf').addEventListener('click',function(){
       var reached=lvl+1;
       if(reached>bestLvl)bestLvl=reached;
       if(levelTimes[reached]===undefined||secs<levelTimes[reached])levelTimes[reached]=secs;
+      // Сохраняем в Firebase
+      saveResult(reached,secs);
       if(lvl===9){
         clearInterval(ticker);
         if(secs<bestTime)bestTime=secs;
