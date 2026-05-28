@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sixtho — проверь свою интуицию</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+#shell{width:100%;max-width:380px;height:100vh;max-height:760px;margin:0 auto;background:#0a0a18;border-radius:24px;border:1.5px solid #1a1a30;overflow:hidden;position:relative}
+.pg{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.pg.show{display:flex}
+#pg-start{align-items:center;justify-content:center;padding:24px;text-align:center}
+.s-logo{width:84px;height:84px;margin-bottom:14px}
+.s-title{font-family:'Cinzel',serif;font-size:26px;color:#FFD700;letter-spacing:3px;margin-bottom:14px}
+.s-desc{font-size:13px;color:#AFA9EC;line-height:1.8;margin-bottom:10px}
+.s-cta{font-size:12px;color:#FFD700;font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:22px}
+.btn-p{width:240px;background:#1a1060;border:0.5px solid #534AB7;border-radius:12px;padding:12px;font-size:14px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:10px;text-align:center}
+.btn-p:active{background:#221580}
+.btn-o{width:240px;background:none;border:0.5px solid #534AB7;border-radius:12px;padding:10px;font-size:13px;color:#7F77DD;cursor:pointer;font-family:'Cinzel',serif;text-align:center}
+.btn-o:active{background:#120d40;color:#AFA9EC}
+#g-sb{display:flex;justify-content:space-between;padding:10px 18px 4px;font-size:11px;color:#444;flex-shrink:0}
+#g-tb{display:flex;justify-content:space-between;align-items:center;padding:3px 16px;flex-shrink:0}
+#g-lv{background:#120d40;border:0.5px solid #534AB7;border-radius:20px;padding:4px 14px;font-size:12px;color:#AFA9EC;font-family:'Cinzel',serif;letter-spacing:1px}
+#g-tm{font-size:14px;color:#FFD700;letter-spacing:2px;font-family:'Cinzel',serif}
+#g-rb{background:#120d40;border:0.5px solid #534AB7;border-radius:20px;padding:4px 12px;font-size:12px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif}
+#g-pr{margin:3px 16px;height:3px;background:#1a1a2e;border-radius:2px;overflow:hidden;flex-shrink:0}
+#g-pf{height:100%;background:#534AB7;border-radius:2px;transition:width 0.4s}
+#g-ta{text-align:center;padding:6px 16px 4px;flex-shrink:0}
+#pg-rules{flex-direction:column}
+#r2-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:0.5px solid #1a1a30;flex-shrink:0}
+#r2-ti{font-family:'Cinzel',serif;font-size:16px;color:#FFD700;letter-spacing:2px}
+#r2-bk{background:#1a1060;border:1px solid #534AB7;border-radius:8px;padding:5px 14px;font-size:12px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif}
+#r2-bk:active{background:#221580}
+#r2-body{flex:1;overflow-y:auto;padding:16px}
+.rule-block{margin-bottom:18px}
+.rule-title{font-size:14px;font-weight:500;color:#AFA9EC;margin-bottom:6px;font-family:'Cinzel',serif}
+.rule-text{font-size:13px;color:#AFA9EC;line-height:1.7}
+#g-lb{font-size:16px;font-weight:500;color:#fff;font-family:'Cinzel',serif;margin-bottom:2px}
+#g-mn{font-size:13px;color:#555;font-family:'Cinzel',serif}
+#g-s2{font-size:11px;color:#534AB7;margin-bottom:6px;letter-spacing:1px}
+#g-ca{padding:8px 12px;display:grid;flex:1;align-content:center;min-height:0}
+#g-hn{margin:4px 12px;background:#120a02;border:0.5px solid #BA7517;border-radius:8px;padding:7px;text-align:center;cursor:pointer;display:none;flex-shrink:0}
+#g-hn.on{border-color:#EF9F27;background:#1a1205}
+#g-hl{font-size:12px;color:#EF9F27}
+#g-hs{font-size:10px;color:#633806;margin-top:2px}
+#g-cf{margin:4px 12px 12px;background:#120d40;border:0.5px solid #534AB7;border-radius:12px;padding:11px;text-align:center;cursor:pointer;flex-shrink:0}
+#g-cf:active{background:#1a1060}
+#g-cf.busy{opacity:0.4;pointer-events:none}
+#g-ct{font-size:13px;font-weight:500;color:#AFA9EC;font-family:'Cinzel',serif}
+.card{border-radius:10px;cursor:pointer;position:relative;overflow:hidden}
+.ci{width:100%;height:100%;transition:transform 0.55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;position:relative}
+.card.flipped .ci{transform:rotateY(180deg)}
+.cr,.cf{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden}
+.cf{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center}
+.cf.ok{background:#0d2a1a;border:1.5px solid #1D9E75}
+.cf.no{background:#f5f5f0;border:1px solid #ddd;display:flex;align-items:center;justify-content:center}
+.cr{background:#fff;border:0.5px solid #ccc}
+.cr.sel{background:#cce8ff;border:2px solid #378ADD}
+.cg{position:absolute;inset:0;overflow:hidden}
+.gl,.rl{position:absolute;width:200%;height:1px;transform-origin:0 0}
+.gl{background:rgba(26,79,168,0.55)}.rl{background:rgba(192,0,26,0.55)}
+.ib1{position:absolute;inset:4px;border:0.5px solid #1a4fa8;border-radius:6px;pointer-events:none}
+.ib2{position:absolute;inset:7px;border:0.5px solid rgba(192,0,26,0.35);border-radius:4px;pointer-events:none}
+#pg-msg{align-items:center;justify-content:center;padding:24px 20px;text-align:center}
+#m-ti{font-family:'Cinzel',serif;font-size:24px;color:#FFD700;letter-spacing:2px;margin-bottom:14px}
+#m-de{font-size:14px;color:#AFA9EC;line-height:1.8;margin-bottom:8px}
+#m-tm{font-family:'Cinzel',serif;font-size:36px;color:#FFD700;letter-spacing:3px;margin:10px 0 20px;display:none}
+#m-bt{width:240px;background:#1a1060;border:0.5px solid #534AB7;border-radius:12px;padding:12px;font-size:14px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:1px;text-align:center;margin-top:4px}
+#m-bt:active{background:#221580}
+#pg-rating{flex-direction:column}
+#r-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:0.5px solid #1a1a30;flex-shrink:0}
+#r-ti{font-family:'Cinzel',serif;font-size:16px;color:#FFD700;letter-spacing:2px}
+#r-bk{background:#1a1060;border:1px solid #534AB7;border-radius:8px;padding:6px 16px;font-size:13px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif}
+#r-bk:active{background:#221580}
+.rtbs{display:flex;gap:8px;padding:10px 16px 6px;flex-shrink:0}
+.rtb{flex:1;text-align:center;padding:6px;border-radius:8px;font-size:12px;cursor:pointer;border:0.5px solid #1a1a30;color:#555;font-family:'Cinzel',serif}
+.rtb.on{background:#120d40;border-color:#534AB7;color:#AFA9EC}
+#r-mr{margin:4px 12px;background:#120d40;border:0.5px solid #534AB7;border-radius:8px;padding:6px 12px;font-size:12px;color:#7F77DD;text-align:center;display:none;flex-shrink:0}
+#r-ls{flex:1;overflow-y:auto;padding:4px 12px 12px}
+.rrow{display:grid;grid-template-columns:30px 1fr 48px 52px;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;margin-bottom:4px}
+.rrk{font-size:13px;font-weight:500;color:#555;text-align:center;font-family:'Cinzel',serif}
+.rrk.g{color:#FFD700}.rrk.s{color:#aaa}.rrk.b{color:#CD7F32}
+.rnm{font-size:12px;color:#AFA9EC;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rlv{text-align:center;color:#7F77DD;font-weight:500;font-size:13px}
+.rtm{text-align:right;color:#555;font-size:11px}
+/* Отладочный лог */
+#dbg{position:absolute;bottom:0;left:0;right:0;max-height:80px;overflow-y:auto;background:rgba(0,0,0,0.85);color:#0f0;font:10px monospace;padding:4px 8px;z-index:99;display:none}
+#dbg.show{display:block}
+</style>
+</head>
+<body>
+<div id="shell">
+  <div id="pg-start" class="pg show">
+    <svg class="s-logo" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="68" rx="42" ry="13" fill="#1a3a8a" stroke="#FFD700" stroke-width="2.5"/>
+      <ellipse cx="50" cy="64" rx="34" ry="9" fill="#1a3a8a"/>
+      <ellipse cx="50" cy="60" rx="29" ry="7" fill="#12277a"/>
+      <ellipse cx="50" cy="58" rx="20" ry="4" fill="#0d1a5a"/>
+      <circle cx="60" cy="46" r="15" fill="#cc1111" stroke="#222" stroke-width="1.5"/>
+      <ellipse cx="56" cy="41" rx="4" ry="5" fill="rgba(255,220,180,0.5)"/>
+      <path d="M60 31 Q65 26 67 31" fill="none" stroke="#2a7a1a" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="66" cy="29" rx="4" ry="6" fill="#2a7a1a"/>
+    </svg>
+    <div class="s-title">SIXTHO</div>
+    <div class="s-desc">Проверь, насколько сильна твоя интуиция.<br>Найди среди похожих карточек<br>карточки с логотипом Sixtho.</div>
+    <div class="s-cta">Войди в рейтинг СуперСенсов</div>
+    <div class="btn-p" id="s-st">Начать игру</div>
+    <div class="btn-o" id="s-rt">Рейтинг СуперСенсов</div>
+    <div class="btn-o" id="s-ru" style="margin-top:4px">Правила игры</div>
+  </div>
+
+  <div id="pg-game" class="pg">
+    <div id="g-sb"><span>Sixtho</span><span id="g-clock">9:41</span></div>
+    <div id="g-tb">
+      <div id="g-lv">Уровень 1</div>
+      <div id="g-tm">00:00</div>
+      <div id="g-rb">Рейтинг</div>
+    </div>
+    <div id="g-pr"><div id="g-pf" style="width:10%"></div></div>
+    <div id="g-ta">
+      <div id="g-s2">ДОВЕРЯЙ ИНТУИЦИИ</div>
+      <div id="g-lb">Найди карточки Sixtho</div>
+      <div id="g-mn">1 из 2</div>
+    </div>
+    <div id="g-ca"></div>
+    <div id="g-hn"><div id="g-hl">Проверить · 5 ✦</div><div id="g-hs">Нажми — укажи карточку</div></div>
+    <div id="g-cf"><div id="g-ct">Выбери карточки</div></div>
+  </div>
+
+  <div id="pg-rules" class="pg">
+    <div id="r2-hd"><div id="r2-ti">Правила игры</div><div id="r2-bk">← Назад</div></div>
+    <div id="r2-body">
+      <div class="rule-block">
+        <div class="rule-title">🎯 Цель</div>
+        <div class="rule-text">Найди среди похожих карточек те, на которых изображён логотип Sixtho. Доверяй только своей интуиции — все карточки выглядят одинаково снаружи.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🃏 Как играть</div>
+        <div class="rule-text">Нажми на карточки которые считаешь правильными. Когда выбрал нужное количество — нажми «Подтвердить выбор». Карточки перевернутся и покажут результат.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">📈 Уровни</div>
+        <div class="rule-text">С каждым уровнем карточек становится больше. Угадал — переходишь на следующий уровень. Ошибся — откат на 2 уровня назад. Дойди до 10-го уровня!</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🔍 Проверка карточки</div>
+        <div class="rule-text">С 3-го уровня появляется кнопка «Проверить». Нажми её, затем укажи любую карточку — она на секунду перевернётся и покажет что внутри. Стоит звёзды Telegram ✦.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🏆 Рейтинг</div>
+        <div class="rule-text">Твой результат — самый высокий достигнутый уровень и время его прохождения. Сезонный рейтинг обновляется каждые 3 месяца. Hall of Senses — вечный зал славы.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pg-msg" class="pg">
+    <div id="m-ti"></div>
+    <div id="m-de"></div>
+    <div id="m-tm"></div>
+    <div id="m-bt"></div>
+  </div>
+
+  <div id="pg-rating" class="pg">
+    <div id="r-hd"><div id="r-ti">СуперСенсы</div><div id="r-bk">← Назад</div></div>
+    <div class="rtbs">
+      <div class="rtb on" id="tb-s">Сезон</div>
+      <div class="rtb" id="tb-a">Hall of Senses</div>
+    </div>
+    <div id="r-mr"></div>
+    <div id="r-ls"></div>
+  </div>
+
+  <div id="dbg"></div>
+</div>
+
+<!-- Telegram WebApp SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+(function(){
+'use strict';
+
+// === Отладка: ловим все ошибки и показываем на экране ===
+function dbg(msg){
+  var d=document.getElementById('dbg');
+  if(!d)return;
+  d.classList.add('show');
+  d.innerHTML+=msg+'<br>';
+  d.scrollTop=d.scrollHeight;
+}
+window.onerror=function(m,s,l,c,e){dbg('ERR: '+m+' @'+l+':'+c);return false;};
+
+try{
+
+// === FIREBASE ===
+var firebaseConfig={
+  apiKey:"AIzaSyBMkKXCsognToR4MOTFXDhplgIzfBaKKVw",
+  authDomain:"sixtho-f033b.firebaseapp.com",
+  databaseURL:"https://sixtho-f033b-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"sixtho-f033b",
+  storageBucket:"sixtho-f033b.firebasestorage.app",
+  messagingSenderId:"937317157626",
+  appId:"1:937317157626:web:fdabd9f9e91aa56235d743"
+};
+firebase.initializeApp(firebaseConfig);
+var db=firebase.database();
+
+// === TELEGRAM USER ===
+var tg=window.Telegram&&window.Telegram.WebApp;
+var TG_USER={id:'guest_'+Math.random().toString(36).slice(2,8),name:'@гость'};
+if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user){
+  var u=tg.initDataUnsafe.user;
+  TG_USER.id='tg_'+u.id;
+  TG_USER.name=u.username?'@'+u.username:(u.first_name||'Игрок');
+}
+if(tg)tg.expand(); // разворачиваем на весь экран
+
+// Сохранить результат в Firebase
+function saveResult(level,time){
+  var season=SEASON.key;
+  var entry={n:TG_USER.name,l:level,t:time,ts:Date.now()};
+  // Сохраняем в сезонный и вечный рейтинги
+  // Ключ — telegram id, чтобы перезаписывать предыдущий результат
+  var refS=db.ref('ratings/'+season+'/'+TG_USER.id);
+  var refA=db.ref('ratings/alltime/'+TG_USER.id);
+  // Обновляем только если результат лучше
+  refS.once('value',function(snap){
+    var prev=snap.val();
+    if(!prev||level>prev.l||(level===prev.l&&time<prev.t)){
+      refS.set(entry);
+    }
+  });
+  refA.once('value',function(snap){
+    var prev=snap.val();
+    if(!prev||level>prev.l||(level===prev.l&&time<prev.t)){
+      refA.set(entry);
+    }
+  });
+}
+
+// Загрузить рейтинг из Firebase
+function loadRating(key,cb){
+  db.ref('ratings/'+key).orderByChild('l').limitToLast(50).once('value',function(snap){
+    var rows=[];
+    snap.forEach(function(child){rows.push(child.val());});
+    // Сортируем: сначала по уровню убыв., потом по времени возр.
+    rows.sort(function(a,b){
+      if(b.l!==a.l)return b.l-a.l;
+      return (a.t||Infinity)-(b.t||Infinity);
+    });
+    cb(rows.slice(0,10));
+  },function(err){
+    dbg('Firebase err: '+err.message);
+    cb(null); // fallback на моковые данные
+  });
+}
+
+var LEVELS=[
+  {lvl:1,total:2,correct:1,hints:0,hp:0},
+  {lvl:2,total:3,correct:1,hints:0,hp:0},
+  {lvl:3,total:4,correct:2,hints:1,hp:5},
+  {lvl:4,total:5,correct:2,hints:2,hp:5},
+  {lvl:5,total:6,correct:3,hints:2,hp:5},
+  {lvl:6,total:7,correct:3,hints:2,hp:5},
+  {lvl:7,total:8,correct:4,hints:3,hp:10},
+  {lvl:8,total:9,correct:4,hints:3,hp:10},
+  {lvl:9,total:10,correct:4,hints:3,hp:10},
+  {lvl:10,total:10,correct:3,hints:3,hp:15}
+];
+var CARD_H={1:{h:200,c:2},2:{h:185,c:2},3:{h:185,c:2},4:{h:140,c:3},5:{h:140,c:3},6:{h:120,c:3},7:{h:120,c:3},8:{h:120,c:3},9:{h:90,c:3},10:{h:90,c:3}};
+var CONGRATS=['Отлично!','Так держать!','Интуиция работает!','Великолепно!','Ты чувствуешь!','Невероятно!','Шестое чувство!','Потрясающе!','Почти финал!'];
+var MS=[{n:'@alex_v',l:10,t:263},{n:'@marina_k',l:10,t:347},{n:'@igor_pro',l:10,t:412},{n:'@dasha_m',l:9,t:198},{n:'@pavel_s',l:8,t:145},{n:'@olga_t',l:7,t:201},{n:'@sasha_r',l:6,t:178},{n:'@kate_b',l:5,t:134},{n:'@max_n',l:4,t:89},{n:'@vera_l',l:3,t:67}];
+var MA=[{n:'@legend',l:10,t:198},{n:'@alex_v',l:10,t:263},{n:'@marina_k',l:10,t:347},{n:'@igor_pro',l:10,t:412},{n:'@dasha_m',l:9,t:198},{n:'@pavel_s',l:8,t:145},{n:'@olga_t',l:7,t:201},{n:'@sasha_r',l:6,t:178},{n:'@kate_b',l:5,t:134},{n:'@max_n',l:4,t:89}];
+
+function $(id){var el=document.getElementById(id);if(!el)dbg('NULL: #'+id);return el;}
+function pad(n){return String(n).padStart(2,'0');}
+function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60);}
+function shuffle(a){return a.slice().sort(function(){return Math.random()-0.5;});}
+var PGS=['pg-start','pg-game','pg-msg','pg-rating','pg-rules'];
+
+var lvl=0,sel=[],correct=[],ticker=null,secs=0,hintsLeft=0,hintMode=false;
+var busy=false;
+var bestLvl=0,bestTime=Infinity,levelTimes={},curTab='s',prevPg='pg-start';
+
+// Определяем текущий сезон
+function getSeason(){
+  var d=new Date();
+  var m=d.getMonth(); // 0-11
+  var y=d.getFullYear();
+  if(m===11)return{name:'Зима',year:y+1,key:(y+1)+'_winter'};
+  if(m<=1)  return{name:'Зима',year:y,  key:y+'_winter'};
+  if(m<=4)  return{name:'Весна',year:y, key:y+'_spring'};
+  if(m<=7)  return{name:'Лето',year:y,  key:y+'_summer'};
+           return{name:'Осень',year:y,  key:y+'_autumn'};
+}
+var SEASON=getSeason();
+
+function go(id){
+  for(var i=0;i<PGS.length;i++){var p=$(PGS[i]);if(p)p.classList.remove('show');}
+  var t=$(id);if(t)t.classList.add('show');
+}
+
+function startTicker(){
+  clearInterval(ticker);
+  ticker=setInterval(function(){secs++;var e=$('g-tm');if(e)e.textContent=fmt(secs);},1000);
+}
+
+function startGame(){
+  lvl=0;secs=0;bestLvl=0;bestTime=Infinity;levelTimes={};busy=false;
+  $('g-tm').textContent='00:00';
+  startTicker();
+  go('pg-game');
+  loadLevel();
+}
+
+function showMsg(title,desc,time,btnText,cb){
+  $('m-ti').textContent=title;
+  $('m-de').innerHTML=desc;
+  var mt=$('m-tm');
+  if(time){mt.style.display='block';mt.textContent=time;}else{mt.style.display='none';}
+  var btn=$('m-bt');
+  btn.textContent=btnText;
+  // одноразовый обработчик: снимаем после первого клика
+  btn.onclick=function(){
+    btn.onclick=null;
+    cb();
+  };
+  go('pg-msg');
+}
+
+function switchTab(t){
+  curTab=t;
+  $('tb-s').classList.toggle('on',t==='s');
+  $('tb-a').classList.toggle('on',t==='a');
+  renderRating();
+}
+
+function renderRating(){
+  $('tb-s').textContent=SEASON.name+' '+SEASON.year;
+  var key=curTab==='s'?SEASON.key:'alltime';
+  // Показываем лоадер
+  $('r-ls').innerHTML='<div style="text-align:center;padding:30px;color:#555;font-size:13px">Загрузка...</div>';
+  loadRating(key,function(rows){
+    var data=rows||(curTab==='s'?MS:MA); // fallback на моковые если Firebase недоступен
+    var rk=['🥇','🥈','🥉'],rc=['g','s','b'];
+    var html='';
+    for(var i=0;i<data.length;i++){
+      var r=data[i];
+      var rank=i<3?rk[i]:String(i+1);
+      var tm=r.t?fmt(r.t):'—';
+      html+='<div class="rrow"><div class="rrk '+(rc[i]||'')+'">'+rank+'</div><div class="rnm">'+r.n+'</div><div class="rlv">'+r.l+'</div><div class="rtm">'+tm+'</div></div>';
+    }
+    $('r-ls').innerHTML=html||'<div style="text-align:center;padding:30px;color:#555;font-size:13px">Пока нет результатов</div>';
+    var mr=$('r-mr');
+    if(bestLvl>0){
+      var myTime=levelTimes[bestLvl];
+      var bt=myTime!==undefined?' · '+fmt(myTime):'';
+      var pos=1;
+      for(var j=0;j<data.length;j++){
+        var d=data[j];
+        if(d.l>bestLvl){pos++;continue;}
+        if(d.l<bestLvl)continue;
+        if(myTime===undefined){pos++;continue;}
+        if(d.t<myTime){pos++;}
+      }
+      mr.style.display='block';
+      mr.textContent='#'+pos+' · уровень '+bestLvl+bt;
+    }else{mr.style.display='none';}
+  });
+}
+
+// Склонение: 1 карточку, 2-4 карточки, 5+ карточек
+function cardWord(n){
+  if(n===1)return'карточку';
+  if(n>=2&&n<=4)return'карточки';
+  return'карточек';
+}
+
+function loadLevel(){
+  var cfg=LEVELS[lvl];
+  var lay=CARD_H[cfg.lvl];
+  sel=[];hintsLeft=cfg.hints;hintMode=false;busy=false;
+  $('g-cf').classList.remove('busy');
+  $('g-lv').textContent='Уровень '+cfg.lvl;
+  $('g-lb').textContent='Найди '+cfg.correct+' '+cardWord(cfg.correct)+' Sixtho';
+  $('g-mn').textContent=cfg.correct+' из '+cfg.total;
+  $('g-pf').style.width=(cfg.lvl/10*100)+'%';
+  var hb=$('g-hn');
+  if(cfg.hints>0){hb.style.display='block';hb.classList.remove('on');}
+  else{hb.style.display='none';}
+  $('g-hl').textContent='Проверить · '+cfg.hp+' ✦';
+  $('g-hs').textContent='Нажми — укажи карточку';
+  updateConfirm();
+  buildCards(cfg,lay);
+}
+
+function saucerSVG(){
+  return '<svg viewBox="0 0 100 100" style="width:66%;height:66%"><ellipse cx="50" cy="68" rx="42" ry="13" fill="#1a3a8a" stroke="#FFD700" stroke-width="2.5"/><ellipse cx="50" cy="64" rx="34" ry="9" fill="#1a3a8a"/><ellipse cx="50" cy="60" rx="29" ry="7" fill="#12277a"/><ellipse cx="50" cy="58" rx="20" ry="4" fill="#0d1a5a"/><circle cx="60" cy="46" r="15" fill="#cc1111" stroke="#222" stroke-width="1.5"/><ellipse cx="56" cy="41" rx="4" ry="5" fill="rgba(255,220,180,0.5)"/><path d="M60 31 Q65 26 67 31" fill="none" stroke="#2a7a1a" stroke-width="2" stroke-linecap="round"/><ellipse cx="66" cy="29" rx="4" ry="6" fill="#2a7a1a"/></svg>';
+}
+
+function gridHTML(){
+  var h='';
+  for(var i=5;i<=130;i+=12){
+    h+='<div class="gl" style="top:'+i+'%;transform:rotate(45deg)"></div>';
+    h+='<div class="rl" style="top:'+i+'%;transform:rotate(-45deg)"></div>';
+  }
+  return h;
+}
+
+function buildCards(cfg,lay){
+  var area=$('g-ca');
+  // Жёсткая очистка: удаляем всех детей вручную + innerHTML
+  while(area.firstChild){area.removeChild(area.firstChild);}
+  area.innerHTML='';
+  area.style.gridTemplateColumns='repeat('+lay.c+',1fr)';
+  area.style.gap='6px';
+  correct=shuffle(Array.from({length:cfg.total},function(_,i){return i;})).slice(0,cfg.correct);
+  for(var i=0;i<cfg.total;i++){
+    var ok=correct.indexOf(i)!==-1;
+    var c=document.createElement('div');
+    c.className='card';
+    c.style.height=lay.h+'px';
+    c.innerHTML='<div class="ci"><div class="cr"><div class="cg">'+gridHTML()+'</div><div class="ib1"></div><div class="ib2"></div></div><div class="cf '+(ok?'ok':'no')+'">'+(ok?saucerSVG():'<span style="font-size:18px;color:#bbb">—</span>')+'</div></div>';
+    (function(idx,cardEl){
+      cardEl.addEventListener('click',function(){onCard(cardEl,idx);});
+    })(i,c);
+    area.appendChild(c);
+  }
+}
+
+function onCard(card,i){
+  if(busy)return;
+  if(hintMode){doHint(card);return;}
+  var cfg=LEVELS[lvl];
+  var cr=card.querySelector('.cr');
+  if(!cr)return;
+  var pos=sel.indexOf(i);
+  if(pos===-1){
+    if(sel.length>=cfg.correct)return;
+    sel.push(i);cr.classList.add('sel');
+  }else{
+    sel.splice(pos,1);cr.classList.remove('sel');
+  }
+  updateConfirm();
+}
+
+function doHint(card){
+  if(hintsLeft<=0)return;
+  hintsLeft--;hintMode=false;
+  $('g-hn').classList.remove('on');
+  $('g-hs').textContent='Нажми — укажи карточку';
+  card.classList.add('flipped');
+  setTimeout(function(){card.classList.remove('flipped');},1500);
+  if(hintsLeft>0){$('g-hl').textContent='Проверить · '+LEVELS[lvl].hp+' ✦ (осталось: '+hintsLeft+')';}
+  else{$('g-hn').style.display='none';}
+}
+
+$('g-hn').addEventListener('click',function(){
+  if(busy||hintsLeft<=0)return;
+  hintMode=!hintMode;
+  $('g-hn').classList.toggle('on',hintMode);
+  $('g-hs').textContent=hintMode?'Теперь нажми на карточку':'Нажми — укажи карточку';
+});
+
+function updateConfirm(){
+  var cfg=LEVELS[lvl];
+  var t=$('g-ct');
+  if(sel.length===0)t.textContent='Выбери карточки';
+  else if(sel.length<cfg.correct)t.textContent='Выбрано '+sel.length+' из '+cfg.correct;
+  else t.textContent='Подтвердить выбор ('+sel.length+'/'+cfg.correct+')';
+}
+
+function revealAll(cb){
+  var cards=document.querySelectorAll('#g-ca .card');
+  for(var i=0;i<cards.length;i++){cards[i].classList.add('flipped');}
+  setTimeout(function(){
+    var cards2=document.querySelectorAll('#g-ca .card');
+    for(var j=0;j<cards2.length;j++){cards2[j].classList.remove('flipped');}
+    cb();
+  },1200);
+}
+
+$('g-cf').addEventListener('click',function(){
+  // ЗАЩИТА от двойного клика: busy блокирует повторный вход
+  if(busy)return;
+  var cfg=LEVELS[lvl];
+  if(sel.length!==cfg.correct)return;
+  busy=true; // блокируем сразу
+  $('g-cf').classList.add('busy');
+
+  var win=true;
+  for(var k=0;k<sel.length;k++){if(correct.indexOf(sel[k])===-1){win=false;break;}}
+
+  revealAll(function(){
+    if(win){
+      var reached=lvl+1;
+      if(reached>bestLvl)bestLvl=reached;
+      if(levelTimes[reached]===undefined||secs<levelTimes[reached])levelTimes[reached]=secs;
+      // Сохраняем в Firebase
+      saveResult(reached,secs);
+      if(lvl===9){
+        clearInterval(ticker);
+        if(secs<bestTime)bestTime=secs;
+        showMsg('SIXTHO ПРОЙДЕН!','Ты прошёл все 10 уровней!<br>Лучший уровень: 10 из 10',fmt(bestTime),'Играть снова',function(){
+          startGame();
+        });
+      }else{
+        showMsg(CONGRATS[lvl]||'Отлично!','Уровень '+(lvl+1)+' пройден!',null,'Следующий уровень',function(){
+          lvl++;go('pg-game');loadLevel();
+        });
+      }
+    }else{
+      var dropTo=Math.max(0,lvl-2);
+      if(dropTo===0&&lvl>0){
+        clearInterval(ticker);secs=0;$('g-tm').textContent='00:00';
+        showMsg('Не угадал...','Откат на уровень 1. Таймер сброшен.<br>Лучший уровень: '+bestLvl+(levelTimes[bestLvl]!==undefined?' · '+fmt(levelTimes[bestLvl]):''),null,'Начать заново',function(){
+          lvl=0;startTicker();go('pg-game');loadLevel();
+        });
+      }else{
+        showMsg('Не угадал...','Откат на уровень '+(dropTo+1)+'<br>Лучший уровень: '+bestLvl+(levelTimes[bestLvl]!==undefined?' · '+fmt(levelTimes[bestLvl]):''),null,'Продолжить',function(){
+          lvl=dropTo;go('pg-game');loadLevel();
+        });
+      }
+    }
+  });
+});
+
+$('s-st').addEventListener('click',function(){if(!busy)startGame();});
+$('s-rt').addEventListener('click',function(){prevPg='pg-start';renderRating();go('pg-rating');});
+$('s-ru').addEventListener('click',function(){go('pg-rules');});
+$('r2-bk').addEventListener('click',function(){go('pg-start');});
+$('g-rb').addEventListener('click',function(){prevPg='pg-game';renderRating();go('pg-rating');});
+$('r-bk').addEventListener('click',function(){go(prevPg);});
+$('tb-s').addEventListener('click',function(){switchTab('s');});
+$('tb-a').addEventListener('click',function(){switchTab('a');});
+
+function clock(){var d=new Date();var e=$('g-clock');if(e)e.textContent=pad(d.getHours())+':'+pad(d.getMinutes());}
+clock();setInterval(clock,30000);
+
+go('pg-start');
+
+}catch(e){dbg('FATAL: '+e.message);}
+})();
+</script>
+</body>
+</html>
