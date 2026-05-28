@@ -29,9 +29,18 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
 #g-pr{margin:3px 16px;height:3px;background:#1a1a2e;border-radius:2px;overflow:hidden;flex-shrink:0}
 #g-pf{height:100%;background:#534AB7;border-radius:2px;transition:width 0.4s}
 #g-ta{text-align:center;padding:6px 16px 4px;flex-shrink:0}
-#g-lb{font-size:12px;color:#555;margin-bottom:2px}
-#g-mn{font-size:17px;font-weight:500;color:#fff;font-family:'Cinzel',serif}
-#g-s2{font-size:11px;color:#534AB7;margin-top:2px;letter-spacing:1px}
+#pg-rules{flex-direction:column}
+#r2-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:0.5px solid #1a1a30;flex-shrink:0}
+#r2-ti{font-family:'Cinzel',serif;font-size:16px;color:#FFD700;letter-spacing:2px}
+#r2-bk{background:#1a1060;border:1px solid #534AB7;border-radius:8px;padding:5px 14px;font-size:12px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif}
+#r2-bk:active{background:#221580}
+#r2-body{flex:1;overflow-y:auto;padding:16px}
+.rule-block{margin-bottom:18px}
+.rule-title{font-size:14px;font-weight:500;color:#AFA9EC;margin-bottom:6px;font-family:'Cinzel',serif}
+.rule-text{font-size:13px;color:#AFA9EC;line-height:1.7}
+#g-lb{font-size:16px;font-weight:500;color:#fff;font-family:'Cinzel',serif;margin-bottom:2px}
+#g-mn{font-size:13px;color:#555;font-family:'Cinzel',serif}
+#g-s2{font-size:11px;color:#534AB7;margin-bottom:6px;letter-spacing:1px}
 #g-ca{padding:8px 12px;display:grid;flex:1;align-content:center;min-height:0}
 #g-hn{margin:4px 12px;background:#120a02;border:0.5px solid #BA7517;border-radius:8px;padding:7px;text-align:center;cursor:pointer;display:none;flex-shrink:0}
 #g-hn.on{border-color:#EF9F27;background:#1a1205}
@@ -100,6 +109,7 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
     <div class="s-cta">Войди в рейтинг СуперСенсов</div>
     <div class="btn-p" id="s-st">Начать игру</div>
     <div class="btn-o" id="s-rt">Рейтинг СуперСенсов</div>
+    <div class="btn-o" id="s-ru" style="margin-top:4px">Правила игры</div>
   </div>
 
   <div id="pg-game" class="pg">
@@ -111,13 +121,39 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
     </div>
     <div id="g-pr"><div id="g-pf" style="width:10%"></div></div>
     <div id="g-ta">
-      <div id="g-lb">Найди правильные карточки</div>
-      <div id="g-mn">1 из 2</div>
       <div id="g-s2">ДОВЕРЯЙ ИНТУИЦИИ</div>
+      <div id="g-lb">Найди карточки Sixtho</div>
+      <div id="g-mn">1 из 2</div>
     </div>
     <div id="g-ca"></div>
     <div id="g-hn"><div id="g-hl">Проверить · 5 ✦</div><div id="g-hs">Нажми — укажи карточку</div></div>
     <div id="g-cf"><div id="g-ct">Выбери карточки</div></div>
+  </div>
+
+  <div id="pg-rules" class="pg">
+    <div id="r2-hd"><div id="r2-ti">Правила игры</div><div id="r2-bk">← Назад</div></div>
+    <div id="r2-body">
+      <div class="rule-block">
+        <div class="rule-title">🎯 Цель</div>
+        <div class="rule-text">Найди среди похожих карточек те, на которых изображён логотип Sixtho. Доверяй только своей интуиции — все карточки выглядят одинаково снаружи.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🃏 Как играть</div>
+        <div class="rule-text">Нажми на карточки которые считаешь правильными. Когда выбрал нужное количество — нажми «Подтвердить выбор». Карточки перевернутся и покажут результат.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">📈 Уровни</div>
+        <div class="rule-text">С каждым уровнем карточек становится больше. Угадал — переходишь на следующий уровень. Ошибся — откат на 2 уровня назад. Дойди до 10-го уровня!</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🔍 Проверка карточки</div>
+        <div class="rule-text">С 3-го уровня появляется кнопка «Проверить». Нажми её, затем укажи любую карточку — она на секунду перевернётся и покажет что внутри. Стоит звёзды Telegram ✦.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🏆 Рейтинг</div>
+        <div class="rule-text">Твой результат — самый высокий достигнутый уровень и время его прохождения. Сезонный рейтинг обновляется каждые 3 месяца. Hall of Senses — вечный зал славы.</div>
+      </div>
+    </div>
   </div>
 
   <div id="pg-msg" class="pg">
@@ -245,7 +281,7 @@ function $(id){var el=document.getElementById(id);if(!el)dbg('NULL: #'+id);retur
 function pad(n){return String(n).padStart(2,'0');}
 function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60);}
 function shuffle(a){return a.slice().sort(function(){return Math.random()-0.5;});}
-var PGS=['pg-start','pg-game','pg-msg','pg-rating'];
+var PGS=['pg-start','pg-game','pg-msg','pg-rating','pg-rules'];
 
 var lvl=0,sel=[],correct=[],ticker=null,secs=0,hintsLeft=0,hintMode=false;
 var busy=false;
@@ -338,12 +374,20 @@ function renderRating(){
   });
 }
 
+// Склонение: 1 карточку, 2-4 карточки, 5+ карточек
+function cardWord(n){
+  if(n===1)return'карточку';
+  if(n>=2&&n<=4)return'карточки';
+  return'карточек';
+}
+
 function loadLevel(){
   var cfg=LEVELS[lvl];
   var lay=CARD_H[cfg.lvl];
   sel=[];hintsLeft=cfg.hints;hintMode=false;busy=false;
   $('g-cf').classList.remove('busy');
   $('g-lv').textContent='Уровень '+cfg.lvl;
+  $('g-lb').textContent='Найди '+cfg.correct+' '+cardWord(cfg.correct)+' Sixtho';
   $('g-mn').textContent=cfg.correct+' из '+cfg.total;
   $('g-pf').style.width=(cfg.lvl/10*100)+'%';
   var hb=$('g-hn');
@@ -488,6 +532,8 @@ $('g-cf').addEventListener('click',function(){
 
 $('s-st').addEventListener('click',function(){if(!busy)startGame();});
 $('s-rt').addEventListener('click',function(){prevPg='pg-start';renderRating();go('pg-rating');});
+$('s-ru').addEventListener('click',function(){go('pg-rules');});
+$('r2-bk').addEventListener('click',function(){go('pg-start');});
 $('g-rb').addEventListener('click',function(){prevPg='pg-game';renderRating();go('pg-rating');});
 $('r-bk').addEventListener('click',function(){go(prevPg);});
 $('tb-s').addEventListener('click',function(){switchTab('s');});
