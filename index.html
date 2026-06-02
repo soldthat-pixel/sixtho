@@ -360,6 +360,7 @@ function initPlayer(){
 
 // Потратить сенсы
 function spendSens(action,cb){
+  dbg('spendSens: '+action+' userId='+TG_USER.id+' token='+userToken+' sens='+userSens);
   if(userSens<=0){go('pg-nobals');return;}
 
   function doSpend(){
