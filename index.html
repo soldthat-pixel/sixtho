@@ -373,8 +373,8 @@ function spendSens(action,cb){
   .catch(function(){cb();}); // при ошибке сети — разрешаем
 }
 
-// Купить пакет сенсов
-function buyPackage(packageId){
+// Купить пакет сенсов — глобальная функция (вызывается из onclick в HTML)
+window.buyPackage=function(packageId){
   if(!tg||!tg.initDataUnsafe||!tg.initDataUnsafe.user){
     dbg('Покупка доступна только в Telegram');return;
   }
@@ -386,13 +386,13 @@ function buyPackage(packageId){
   .then(function(r){return r.json();})
   .then(function(d){if(!d.ok)dbg('buy err: '+d.error);})
   .catch(function(e){dbg('buy err: '+e.message);});
-}
+};
 
-// Открыть магазин
-function openShop(){
+// Открыть магазин — глобальная функция (вызывается из onclick в HTML)
+window.openShop=function(){
   prevShopPage=currentPage()||'pg-game';
   go('pg-shop');
-}
+};
 
 // Текущая страница
 function currentPage(){
