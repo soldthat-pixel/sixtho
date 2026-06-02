@@ -361,27 +361,41 @@ function initPlayer(){
 // Потратить сенсы
 function spendSens(action,cb){
   if(userSens<=0){go('pg-nobals');return;}
-  fetch(SERVER+'/spend',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({userId:TG_USER.id,action:action,token:userToken})
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.ok){
-      userSens=d.sens;
-      updateSensDisplay();
+
+  function doSpend(){
+    fetch(SERVER+'/spend',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({userId:TG_USER.id,action:action,token:userToken})
+    })
+    .then(function(r){return r.json();})
+    .then(function(d){
+      dbg('spend: ok='+d.ok+' sens='+d.sens+' err='+d.error);
+      if(d.ok){
+        userSens=d.sens;
+        updateSensDisplay();
+        cb();
+      }else if(d.error==='Invalid token'){
+        // Перезапрашиваем токен и пробуем ещё раз
+        fetch(SERVER+'/token/'+TG_USER.id)
+          .then(function(r){return r.json();})
+          .then(function(t){
+            if(t.ok){userToken=t.token;doSpend();}
+            else{cb();}
+          }).catch(function(){cb();});
+      }else if(d.error==='Недостаточно сенсов'){
+        go('pg-nobals');
+      }else{
+        cb();
+      }
+    })
+    .catch(function(e){
+      dbg('spend net err: '+e.message);
       cb();
-    }else{
-      dbg('spend err: '+(d.error||'unknown'));
-      if(d.error==='Недостаточно сенсов'){go('pg-nobals');}
-      else{cb();} // при прочих ошибках разрешаем действие
-    }
-  })
-  .catch(function(e){
-    dbg('spend net err: '+e.message);
-    cb(); // при ошибке сети — разрешаем
-  });
+    });
+  }
+
+  doSpend();
 }
 
 // Купить пакет сенсов — глобальная функция (вызывается из onclick в HTML)
