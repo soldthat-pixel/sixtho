@@ -128,8 +128,9 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
 #nb-shop{width:100%;background:#1a1060;border:0.5px solid #534AB7;border-radius:12px;padding:12px;font-size:14px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif;text-align:center;margin-bottom:8px}
 #nb-close{width:100%;background:none;border:0.5px solid #333;border-radius:12px;padding:10px;font-size:13px;color:#555;cursor:pointer;text-align:center}
 /* Отладочный лог */
-#dbg{position:absolute;bottom:0;left:0;right:0;max-height:80px;overflow-y:auto;background:rgba(0,0,0,0.85);color:#0f0;font:10px monospace;padding:4px 8px;z-index:99;display:none}
-#dbg.show{display:block}
+#g-home{text-align:center;padding:4px;font-size:11px;color:#444;cursor:pointer;flex-shrink:0}
+#g-home:active{color:#AFA9EC}
+#dbg{display:none!important}
 </style>
 </head>
 <body>
@@ -166,6 +167,7 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
       <div id="g-sens" onclick="openShop()">⚡ 0</div>
     </div>
     <div id="g-pr"><div id="g-pf" style="width:10%"></div></div>
+    <div id="g-home" onclick="goHome()">⌂ На главный</div>
     <div id="g-ta">
       <div id="g-s2">ДОВЕРЯЙ ИНТУИЦИИ</div>
       <div id="g-lb">Найди карточки Sixtho</div>
@@ -219,7 +221,7 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
     <div id="m-de"></div>
     <div id="m-tm"></div>
     <div id="m-bt"></div>
-    <div id="m-bt2" style="display:none;width:100%;background:none;border:0.5px solid #333;border-radius:12px;padding:10px;font-size:13px;color:#555;cursor:pointer;text-align:center;margin-top:8px">Откатиться назад</div>
+    <div id="m-bt2" style="display:none;width:100%;background:#1a0a0a;border:1px solid #534AB7;border-radius:12px;padding:10px;font-size:13px;color:#AFA9EC;cursor:pointer;text-align:center;margin-top:8px">← Откатиться назад</div>
   </div>
 
   <div id="pg-rating" class="pg">
@@ -430,6 +432,12 @@ window.buyPackage=function(packageId){
 window.openShop=function(){
   prevShopPage=currentPage()||'pg-game';
   go('pg-shop');
+};
+
+window.goHome=function(){
+  clearInterval(ticker);ticker=null;alive=false;
+  go('pg-start');
+  loadTop5();
 };
 
 // Текущая страница
@@ -797,8 +805,8 @@ $('g-cf').addEventListener('click',function(){
         }
       }
 
-      // Показываем возможность возрождения если есть сенсы
-      if(userSens>=15){
+      // Показываем возможность возрождения только с 4-го уровня
+      if(userSens>=15&&curLvl>=3){
         showMsgRevival(
           'Не угадал...',
           'Откат на уровень '+(dropTo===0?'1':dropTo+1)+'<br>Или возродись на уровне '+(curLvl+1)+' за 15 ⚡',
