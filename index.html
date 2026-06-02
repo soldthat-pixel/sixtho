@@ -375,16 +375,28 @@ function spendSens(action,cb){
 
 // Купить пакет сенсов — глобальная функция (вызывается из onclick в HTML)
 window.buyPackage=function(packageId){
-  if(!tg||!tg.initDataUnsafe||!tg.initDataUnsafe.user){
-    dbg('Покупка доступна только в Telegram');return;
-  }
   fetch(SERVER+'/buy',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({userId:TG_USER.id,packageId:packageId,chatId:tg.initDataUnsafe.user.id})
+    body:JSON.stringify({packageId:packageId})
   })
   .then(function(r){return r.json();})
-  .then(function(d){if(!d.ok)dbg('buy err: '+d.error);})
+  .then(function(d){
+    if(!d.ok){dbg('buy err: '+d.error);return;}
+    // Открываем оплату прямо внутри Mini App — игра не закрывается
+    if(tg&&tg.openInvoice){
+      tg.openInvoice(d.link,function(status){
+        if(status==='paid'){
+          // Обновляем баланс после оплаты
+          fetch(SERVER+'/sens/'+TG_USER.id)
+            .then(function(r){return r.json();})
+            .then(function(d){if(d.ok){userSens=d.sens;updateSensDisplay();}});
+        }
+      });
+    } else {
+      dbg('openInvoice недоступен — открой игру в Telegram');
+    }
+  })
   .catch(function(e){dbg('buy err: '+e.message);});
 };
 
