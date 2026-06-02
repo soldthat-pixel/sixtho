@@ -86,6 +86,47 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
 .rnm{font-size:12px;color:#AFA9EC;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rlv{text-align:center;color:#7F77DD;font-weight:500;font-size:13px}
 .rtm{text-align:right;color:#555;font-size:11px}
+/* Сенсы в топбаре */
+#g-sens{background:#120d40;border:0.5px solid #534AB7;border-radius:20px;padding:4px 10px;font-size:12px;color:#EF9F27;cursor:pointer;font-family:'Cinzel',serif}
+/* Топ-5 на старте */
+#s-top{width:100%;margin-bottom:12px}
+.s-top-title{font-size:11px;color:#534AB7;letter-spacing:1px;margin-bottom:6px;font-family:'Cinzel',serif;text-align:center}
+.s-top-row{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:6px;margin-bottom:3px;font-size:12px}
+.s-top-rank{color:#555;width:20px;font-family:'Cinzel',serif}
+.s-top-name{flex:1;color:#AFA9EC;padding:0 6px}
+.s-top-lvl{color:#7F77DD;font-weight:500;width:20px;text-align:center}
+.s-top-time{color:#555;width:40px;text-align:right;font-size:11px}
+/* Реферальная шторка */
+#pg-ref{flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,0.7)}
+#ref-sheet{background:#0f0f20;border-radius:20px 20px 0 0;padding:20px;border-top:0.5px solid #1a1a30}
+#ref-title{font-family:'Cinzel',serif;font-size:16px;color:#FFD700;letter-spacing:2px;margin-bottom:8px;text-align:center}
+#ref-desc{font-size:13px;color:#AFA9EC;text-align:center;line-height:1.7;margin-bottom:14px}
+#ref-link{background:#120d40;border:0.5px solid #534AB7;border-radius:8px;padding:10px 12px;font-size:12px;color:#7F77DD;margin-bottom:12px;word-break:break-all;text-align:center}
+#ref-share{width:100%;background:#1a1060;border:0.5px solid #534AB7;border-radius:12px;padding:12px;font-size:14px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif;text-align:center;margin-bottom:8px}
+#ref-close{width:100%;background:none;border:0.5px solid #333;border-radius:12px;padding:10px;font-size:13px;color:#555;cursor:pointer;font-family:'Cinzel',serif;text-align:center}
+/* Магазин сенсов */
+#pg-shop{flex-direction:column}
+#sh-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:0.5px solid #1a1a30;flex-shrink:0}
+#sh-ti{font-family:'Cinzel',serif;font-size:16px;color:#FFD700;letter-spacing:2px}
+#sh-bk{background:#1a1060;border:1px solid #534AB7;border-radius:8px;padding:5px 14px;font-size:12px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif}
+#sh-body{flex:1;padding:16px;overflow-y:auto}
+#sh-balance{text-align:center;margin-bottom:20px}
+#sh-bal-val{font-family:'Cinzel',serif;font-size:32px;color:#EF9F27;letter-spacing:2px}
+#sh-bal-lbl{font-size:12px;color:#555;margin-top:2px}
+.sh-pkg{background:#120d40;border:0.5px solid #534AB7;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.sh-pkg:active{background:#1a1060}
+.sh-pkg-info{}
+.sh-pkg-sens{font-family:'Cinzel',serif;font-size:18px;color:#EF9F27}
+.sh-pkg-lbl{font-size:11px;color:#555;margin-top:2px}
+.sh-pkg-price{background:#1a1060;border:0.5px solid #534AB7;border-radius:8px;padding:6px 12px;font-size:13px;color:#AFA9EC;font-family:'Cinzel',serif}
+.sh-info{font-size:12px;color:#333;text-align:center;margin-top:16px;line-height:1.6}
+/* Нет баланса — шторка */
+#pg-nobals{flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,0.7)}
+#nb-sheet{background:#0f0f20;border-radius:20px 20px 0 0;padding:20px;border-top:0.5px solid #1a1a30}
+#nb-title{font-family:'Cinzel',serif;font-size:16px;color:#FFD700;letter-spacing:2px;margin-bottom:6px;text-align:center}
+#nb-desc{font-size:13px;color:#AFA9EC;text-align:center;margin-bottom:14px}
+#nb-shop{width:100%;background:#1a1060;border:0.5px solid #534AB7;border-radius:12px;padding:12px;font-size:14px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif;text-align:center;margin-bottom:8px}
+#nb-close{width:100%;background:none;border:0.5px solid #333;border-radius:12px;padding:10px;font-size:13px;color:#555;cursor:pointer;text-align:center}
 /* Отладочный лог */
 #dbg{position:absolute;bottom:0;left:0;right:0;max-height:80px;overflow-y:auto;background:rgba(0,0,0,0.85);color:#0f0;font:10px monospace;padding:4px 8px;z-index:99;display:none}
 #dbg.show{display:block}
@@ -106,10 +147,15 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
     </svg>
     <div class="s-title">SIXTHO</div>
     <div class="s-desc">Проверь, насколько сильна твоя интуиция.<br>Найди среди похожих карточек<br>карточки с логотипом Sixtho.</div>
-    <div class="s-cta">Войди в рейтинг СуперСенсов</div>
+    <div id="s-top">
+      <div class="s-top-title">⭐ ТОП СЕЗОНА</div>
+      <div id="s-top-list"></div>
+    </div>
     <div class="btn-p" id="s-st">Начать игру</div>
-    <div class="btn-o" id="s-rt">Рейтинг СуперСенсов</div>
-    <div class="btn-o" id="s-ru" style="margin-top:4px">Правила игры</div>
+    <div class="btn-o" id="s-ref" style="margin-bottom:6px">🎁 Пригласи друга — получи 25 сенсов</div>
+    <div class="btn-o" id="s-shop" style="margin-bottom:6px">⚡ Магазин сенсов</div>
+    <div class="btn-o" id="s-rt" style="margin-bottom:6px">Рейтинг СуперСенсов</div>
+    <div class="btn-o" id="s-ru">Правила игры</div>
   </div>
 
   <div id="pg-game" class="pg">
@@ -117,7 +163,7 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
     <div id="g-tb">
       <div id="g-lv">Уровень 1</div>
       <div id="g-tm">00:00</div>
-      <div id="g-rb">Рейтинг</div>
+      <div id="g-sens" onclick="openShop()">⚡ 0</div>
     </div>
     <div id="g-pr"><div id="g-pf" style="width:10%"></div></div>
     <div id="g-ta">
@@ -126,7 +172,7 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
       <div id="g-mn">1 из 2</div>
     </div>
     <div id="g-ca"></div>
-    <div id="g-hn"><div id="g-hl">Проверить · 5 ✦</div><div id="g-hs">Нажми — укажи карточку</div></div>
+    <div id="g-hn"><div id="g-hl">Проверить · 1 ⚡</div><div id="g-hs">Нажми — укажи карточку</div></div>
     <div id="g-cf"><div id="g-ct">Выбери карточки</div></div>
   </div>
 
@@ -146,8 +192,20 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
         <div class="rule-text">С каждым уровнем карточек становится больше. Угадал — переходишь на следующий уровень. Ошибся — откат на 2 уровня назад. Дойди до 10-го уровня!</div>
       </div>
       <div class="rule-block">
+        <div class="rule-title">⚡ Сенсы</div>
+        <div class="rule-text">Сенсы — игровая валюта Sixtho. При первом запуске ты получаешь 50 сенсов бесплатно. Пополнить баланс можно в магазине за Telegram Stars.</div>
+      </div>
+      <div class="rule-block">
         <div class="rule-title">🔍 Проверка карточки</div>
-        <div class="rule-text">С 3-го уровня появляется кнопка «Проверить». Нажми её, затем укажи любую карточку — она на секунду перевернётся и покажет что внутри. Стоит звёзды Telegram ✦.</div>
+        <div class="rule-text">С 3-го уровня появляется кнопка «Проверить». Нажми её, затем укажи любую карточку — она на секунду перевернётся. Стоит 1 сенс.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">💫 Возрождение</div>
+        <div class="rule-text">При откате на уровень 1 можно купить возрождение за 15 сенсов — остаться на текущем уровне без потери прогресса.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-title">🎁 Реферальная программа</div>
+        <div class="rule-text">Пригласи друга по своей ссылке — вы оба получите по 25 сенсов. Когда друг пройдёт 2-й уровень — ты получишь +30 сенсов. Когда друг пройдёт 5-й уровень — ещё +30 сенсов.</div>
       </div>
       <div class="rule-block">
         <div class="rule-title">🏆 Рейтинг</div>
@@ -171,6 +229,51 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
     </div>
     <div id="r-mr"></div>
     <div id="r-ls"></div>
+  </div>
+
+  <!-- МАГАЗИН СЕНСОВ -->
+  <div id="pg-shop" class="pg">
+    <div id="sh-hd"><div id="sh-ti">Магазин сенсов</div><div id="sh-bk">← Назад</div></div>
+    <div id="sh-body">
+      <div id="sh-balance">
+        <div id="sh-bal-val">0 ⚡</div>
+        <div id="sh-bal-lbl">твой баланс</div>
+      </div>
+      <div class="sh-pkg" onclick="buyPackage('sens_30')">
+        <div class="sh-pkg-info"><div class="sh-pkg-sens">30 ⚡</div><div class="sh-pkg-lbl">стартовый пакет</div></div>
+        <div class="sh-pkg-price">5 ⭐</div>
+      </div>
+      <div class="sh-pkg" onclick="buyPackage('sens_100')">
+        <div class="sh-pkg-info"><div class="sh-pkg-sens">100 ⚡</div><div class="sh-pkg-lbl">популярный</div></div>
+        <div class="sh-pkg-price">12 ⭐</div>
+      </div>
+      <div class="sh-pkg" onclick="buyPackage('sens_350')">
+        <div class="sh-pkg-info"><div class="sh-pkg-sens">350 ⚡</div><div class="sh-pkg-lbl">выгодный</div></div>
+        <div class="sh-pkg-price">35 ⭐</div>
+      </div>
+      <div class="sh-info">Оплата через Telegram Stars ⭐<br>1 подсказка = 1 ⚡ · Возрождение = 15 ⚡</div>
+    </div>
+  </div>
+
+  <!-- РЕФЕРАЛЬНАЯ ШТОРКА -->
+  <div id="pg-ref" class="pg">
+    <div id="ref-sheet">
+      <div id="ref-title">🎁 Пригласи друга</div>
+      <div id="ref-desc">Отправь ссылку другу — вы оба получите по 25 сенсов.<br>Друг прошёл уровень 2 → ты получишь +30 сенсов.<br>Друг прошёл уровень 5 → ещё +30 сенсов!</div>
+      <div id="ref-link"></div>
+      <div id="ref-share">Поделиться в Telegram</div>
+      <div id="ref-close">Закрыть</div>
+    </div>
+  </div>
+
+  <!-- ШТОРКА НЕТ БАЛАНСА -->
+  <div id="pg-nobals" class="pg">
+    <div id="nb-sheet">
+      <div id="nb-title">Недостаточно сенсов ⚡</div>
+      <div id="nb-desc">Пополни баланс чтобы использовать подсказки и возрождения</div>
+      <div id="nb-shop">Открыть магазин</div>
+      <div id="nb-close">Продолжить без подсказки</div>
+    </div>
   </div>
 
   <div id="dbg"></div>
@@ -218,7 +321,108 @@ if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user){
   TG_USER.id='tg_'+u.id;
   TG_USER.name=u.username?'@'+u.username:(u.first_name||'Игрок');
 }
-if(tg)tg.expand(); // разворачиваем на весь экран
+if(tg)tg.expand();
+
+var SERVER='https://sixtho-server-production.up.railway.app';
+var userSens=0;
+var userToken='';
+var refFromId=''; // реферер
+
+// Получаем реферера из параметров запуска
+if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param){
+  refFromId=tg.initDataUnsafe.start_param;
+}
+
+function updateSensDisplay(){
+  var e=$('g-sens');if(e)e.textContent='⚡ '+userSens;
+  var sb=$('sh-bal-val');if(sb)sb.textContent=userSens+' ⚡';
+}
+
+// Инициализация игрока на сервере
+function initPlayer(){
+  fetch(SERVER+'/token/'+TG_USER.id)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok)userToken=d.token;
+      return fetch(SERVER+'/init',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({userId:TG_USER.id,username:TG_USER.name,referredBy:refFromId||undefined})
+      });
+    })
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok){userSens=d.sens;updateSensDisplay();}
+    })
+    .catch(function(e){dbg('init err: '+e.message);});
+}
+
+// Потратить сенсы
+function spendSens(action,cb){
+  if(userSens<=0){go('pg-nobals');return;}
+  fetch(SERVER+'/spend',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({userId:TG_USER.id,action:action,token:userToken})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.ok){userSens=d.sens;updateSensDisplay();cb();}
+    else{go('pg-nobals');}
+  })
+  .catch(function(){cb();}); // при ошибке сети — разрешаем
+}
+
+// Купить пакет сенсов
+function buyPackage(packageId){
+  if(!tg||!tg.initDataUnsafe||!tg.initDataUnsafe.user){
+    dbg('Покупка доступна только в Telegram');return;
+  }
+  fetch(SERVER+'/buy',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({userId:TG_USER.id,packageId:packageId,chatId:tg.initDataUnsafe.user.id})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){if(!d.ok)dbg('buy err: '+d.error);})
+  .catch(function(e){dbg('buy err: '+e.message);});
+}
+
+// Открыть магазин
+function openShop(){
+  prevShopPage=currentPage()||'pg-game';
+  go('pg-shop');
+}
+
+// Текущая страница
+function currentPage(){
+  for(var i=0;i<PGS.length;i++){if($(PGS[i]).classList.contains('show'))return PGS[i];}
+  return null;
+}
+
+// Реферальная ссылка
+function getRefLink(){
+  return 'https://t.me/sixtho_bot/play?startapp='+TG_USER.id;
+}
+
+// Загрузить топ-5 на стартовый экран
+function loadTop5(){
+  loadRating(SEASON.key,function(rows){
+    var list=$('s-top-list');
+    if(!list)return;
+    if(!rows||rows.length===0){list.innerHTML='<div style="text-align:center;color:#333;font-size:11px;padding:4px">Будь первым в рейтинге!</div>';return;}
+    var rk=['🥇','🥈','🥉','4','5'];
+    var html='';
+    for(var i=0;i<Math.min(5,rows.length);i++){
+      var r=rows[i];
+      var tm=r.t?fmt(r.t):'—';
+      html+='<div class="s-top-row"><span class="s-top-rank">'+rk[i]+'</span><span class="s-top-name">'+r.n+'</span><span class="s-top-lvl">'+r.l+'</span><span class="s-top-time">'+tm+'</span></div>';
+    }
+    list.innerHTML=html;
+  });
+}
+
+var prevShopPage='pg-start'; // разворачиваем на весь экран
 
 // Сохранить результат в Firebase
 function saveResult(level,time){
@@ -281,7 +485,7 @@ function $(id){var el=document.getElementById(id);if(!el)dbg('NULL: #'+id);retur
 function pad(n){return String(n).padStart(2,'0');}
 function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60);}
 function shuffle(a){return a.slice().sort(function(){return Math.random()-0.5;});}
-var PGS=['pg-start','pg-game','pg-msg','pg-rating','pg-rules'];
+var PGS=['pg-start','pg-game','pg-msg','pg-rating','pg-rules','pg-shop','pg-ref','pg-nobals'];
 
 var lvl=0,sel=[],correct=[],ticker=null,secs=0,hintsLeft=0,hintMode=false;
 var busy=false;
@@ -317,6 +521,10 @@ function startGame(){
   go('pg-game');
   loadLevel();
 }
+
+// Инициализируем игрока и топ при загрузке
+initPlayer();
+loadTop5();
 
 function showMsg(title,desc,time,btnText,cb){
   $('m-ti').textContent=title;
@@ -393,7 +601,7 @@ function loadLevel(){
   var hb=$('g-hn');
   if(cfg.hints>0){hb.style.display='block';hb.classList.remove('on');}
   else{hb.style.display='none';}
-  $('g-hl').textContent='Проверить · '+cfg.hp+' ✦';
+  $('g-hl').textContent='Проверить · 1 ⚡';
   $('g-hs').textContent='Нажми — укажи карточку';
   updateConfirm();
   buildCards(cfg,lay);
@@ -451,17 +659,21 @@ function onCard(card,i){
 
 function doHint(card){
   if(hintsLeft<=0)return;
-  hintsLeft--;hintMode=false;
-  $('g-hn').classList.remove('on');
-  $('g-hs').textContent='Нажми — укажи карточку';
-  card.classList.add('flipped');
-  setTimeout(function(){card.classList.remove('flipped');},1500);
-  if(hintsLeft>0){$('g-hl').textContent='Проверить · '+LEVELS[lvl].hp+' ✦ (осталось: '+hintsLeft+')';}
-  else{$('g-hn').style.display='none';}
+  // Списываем 1 сенс через сервер
+  spendSens('hint',function(){
+    hintsLeft--;hintMode=false;
+    $('g-hn').classList.remove('on');
+    $('g-hs').textContent='Нажми — укажи карточку';
+    card.classList.add('flipped');
+    setTimeout(function(){card.classList.remove('flipped');},1500);
+    if(hintsLeft>0){$('g-hl').textContent='Проверить · 1 ⚡ (осталось: '+hintsLeft+')';}
+    else{$('g-hn').style.display='none';}
+  });
 }
 
 $('g-hn').addEventListener('click',function(){
   if(busy||hintsLeft<=0)return;
+  if(userSens<=0){go('pg-nobals');return;}
   hintMode=!hintMode;
   $('g-hn').classList.toggle('on',hintMode);
   $('g-hs').textContent=hintMode?'Теперь нажми на карточку':'Нажми — укажи карточку';
@@ -503,6 +715,14 @@ $('g-cf').addEventListener('click',function(){
       if(levelTimes[reached]===undefined||secs<levelTimes[reached])levelTimes[reached]=secs;
       // Сохраняем в Firebase
       saveResult(reached,secs);
+      // Реферальный бонус при прохождении уровня 2 и 5
+      if(reached===2||reached===5){
+        fetch(SERVER+'/ref-bonus',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({userId:TG_USER.id,level:reached,token:userToken})
+        }).catch(function(){});
+      }
       if(lvl===9){
         clearInterval(ticker);
         if(secs<bestTime)bestTime=secs;
@@ -516,10 +736,10 @@ $('g-cf').addEventListener('click',function(){
       }
     }else{
       var dropTo=Math.max(0,lvl-2);
-      if(dropTo===0&&lvl>0){
-        clearInterval(ticker);secs=0;$('g-tm').textContent='00:00';
+      if(dropTo===0){
+        clearInterval(ticker);ticker=null;secs=0;$('g-tm').textContent='00:00';
         showMsg('Не угадал...','Откат на уровень 1. Таймер сброшен.<br>Лучший уровень: '+bestLvl+(levelTimes[bestLvl]!==undefined?' · '+fmt(levelTimes[bestLvl]):''),null,'Начать заново',function(){
-          lvl=0;startTicker();go('pg-game');loadLevel();
+          lvl=0;clearInterval(ticker);secs=0;startTicker();go('pg-game');loadLevel();
         });
       }else{
         showMsg('Не угадал...','Откат на уровень '+(dropTo+1)+'<br>Лучший уровень: '+bestLvl+(levelTimes[bestLvl]!==undefined?' · '+fmt(levelTimes[bestLvl]):''),null,'Продолжить',function(){
@@ -531,13 +751,32 @@ $('g-cf').addEventListener('click',function(){
 });
 
 $('s-st').addEventListener('click',function(){if(!busy)startGame();});
+$('s-shop').addEventListener('click',function(){prevShopPage='pg-start';go('pg-shop');});
 $('s-rt').addEventListener('click',function(){prevPg='pg-start';renderRating();go('pg-rating');});
 $('s-ru').addEventListener('click',function(){go('pg-rules');});
+$('s-ref').addEventListener('click',function(){
+  var link=getRefLink();
+  $('ref-link').textContent=link;
+  go('pg-ref');
+});
 $('r2-bk').addEventListener('click',function(){go('pg-start');});
-$('g-rb').addEventListener('click',function(){prevPg='pg-game';renderRating();go('pg-rating');});
 $('r-bk').addEventListener('click',function(){go(prevPg);});
 $('tb-s').addEventListener('click',function(){switchTab('s');});
 $('tb-a').addEventListener('click',function(){switchTab('a');});
+$('sh-bk').addEventListener('click',function(){go(prevShopPage);});
+$('ref-share').addEventListener('click',function(){
+  var link=getRefLink();
+  var text='Проверь своё шестое чувство! Играй в Sixtho и получи 25 сенсов по моей ссылке 🔮\n'+link;
+  if(tg&&tg.openTelegramLink){
+    tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(text));
+  }else{
+    navigator.clipboard&&navigator.clipboard.writeText(link);
+    alert('Ссылка скопирована!');
+  }
+});
+$('ref-close').addEventListener('click',function(){go('pg-start');});
+$('nb-shop').addEventListener('click',function(){go('pg-shop');});
+$('nb-close').addEventListener('click',function(){go('pg-game');});
 
 function clock(){var d=new Date();var e=$('g-clock');if(e)e.textContent=pad(d.getHours())+':'+pad(d.getMinutes());}
 clock();setInterval(clock,30000);
