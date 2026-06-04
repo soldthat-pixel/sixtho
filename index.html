@@ -355,7 +355,15 @@ function initPlayer(){
     })
     .then(function(r){return r.json();})
     .then(function(d){
-      if(d.ok){userSens=d.sens;updateSensDisplay();}
+      if(d.ok){
+        userSens=d.sens;
+        updateSensDisplay();
+        // Загружаем актуальную стоимость возрождения
+        fetch(SERVER+'/revival-cost/'+TG_USER.id)
+          .then(function(r){return r.json();})
+          .then(function(d){if(d.ok)revivalCostCurrent=d.cost;})
+          .catch(function(){});
+      }
     })
     .catch(function(e){dbg('init err: '+e.message);});
 }
@@ -379,7 +387,7 @@ function spendSens(action,cb,cost){
       if(d.ok){
         userSens=d.sens;
         updateSensDisplay();
-        cb();
+        cb(d);
       }else if(d.error==='Invalid token'){
         // Перезапрашиваем токен и пробуем ещё раз
         fetch(SERVER+'/token/'+TG_USER.id)
@@ -525,8 +533,7 @@ var LEVELS=[
   {lvl:10,total:10,correct:3,hints:3,hp:15}
 ];
 // Прогрессивная стоимость возрождений за сессию
-var REVIVAL_COSTS=[15,25,50,75,100];
-var revivalCount=0; // счётчик возрождений в текущей сессии
+var revivalCostCurrent=15; // актуальная стоимость возрождения с сервера
 var CARD_H={1:{h:200,c:2},2:{h:185,c:2},3:{h:185,c:2},4:{h:140,c:3},5:{h:140,c:3},6:{h:120,c:3},7:{h:120,c:3},8:{h:120,c:3},9:{h:90,c:3},10:{h:90,c:3}};
 var CONGRATS=['Отлично!','Так держать!','Интуиция работает!','Великолепно!','Ты чувствуешь!','Невероятно!','Шестое чувство!','Потрясающе!','Почти финал!'];
 var MS=[{n:'@alex_v',l:10,t:263},{n:'@marina_k',l:10,t:347},{n:'@igor_pro',l:10,t:412},{n:'@dasha_m',l:9,t:198},{n:'@pavel_s',l:8,t:145},{n:'@olga_t',l:7,t:201},{n:'@sasha_r',l:6,t:178},{n:'@kate_b',l:5,t:134},{n:'@max_n',l:4,t:89},{n:'@vera_l',l:3,t:67}];
@@ -566,7 +573,7 @@ function startTicker(){
 }
 
 function startGame(){
-  lvl=0;secs=0;bestLvl=0;bestTime=Infinity;levelTimes={};busy=false;revivalCount=0;
+  lvl=0;secs=0;bestLvl=0;bestTime=Infinity;levelTimes={};busy=false;
   $('g-tm').textContent='00:00';
   startTicker();
   go('pg-game');
@@ -811,16 +818,16 @@ $('g-cf').addEventListener('click',function(){
       }
 
       // Показываем возможность возрождения только с 4-го уровня
-      var revivalCost=REVIVAL_COSTS[Math.min(revivalCount,REVIVAL_COSTS.length-1)];
+      var revivalCost=revivalCostCurrent;
       if(userSens>=revivalCost&&curLvl>=3){
         showMsgRevival(
           'Не угадал...',
           'Откат на уровень '+(dropTo===0?'1':dropTo+1)+'<br>Или возродись на уровне '+(curLvl+1)+' за '+revivalCost+' ⚡',
           function(){
-            spendSens('revival',function(){
-              revivalCount++;
+            spendSens('revival',function(d){
+              if(d&&d.nextRevivalCost)revivalCostCurrent=d.nextRevivalCost;
               lvl=curLvl;go('pg-game');loadLevel();
-            },revivalCost);
+            });
           },
           doRollback
         );
