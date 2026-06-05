@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sixtho Analytics</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#05050d;color:#AFA9EC;font-family:Inter,sans-serif;padding:20px}
+h1{font-size:22px;color:#FFD700;margin-bottom:4px;font-family:'Cinzel',serif}
+.subtitle{font-size:13px;color:#534AB7;margin-bottom:24px}
+.period{display:flex;gap:8px;margin-bottom:24px}
+.period button{background:#120d40;border:0.5px solid #534AB7;border-radius:8px;padding:6px 14px;font-size:12px;color:#7F77DD;cursor:pointer}
+.period button.active{background:#534AB7;color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px}
+.kpi{background:#0f0f20;border:0.5px solid #1a1a30;border-radius:12px;padding:16px}
+.kpi-val{font-size:28px;font-weight:500;color:#FFD700;font-family:'Cinzel',serif}
+.kpi-lbl{font-size:12px;color:#555;margin-top:4px}
+.kpi-sub{font-size:11px;color:#534AB7;margin-top:2px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#0f0f20;border:0.5px solid #1a1a30;border-radius:12px;padding:16px}
+.chart-card.wide{grid-column:1/-1}
+.chart-title{font-size:13px;color:#AFA9EC;margin-bottom:12px;font-weight:500}
+canvas{max-height:220px}
+.loading{text-align:center;color:#333;padding:40px;font-size:14px}
+#auth{position:fixed;inset:0;background:#05050d;display:flex;align-items:center;justify-content:center;z-index:99;flex-direction:column;gap:12px}
+#auth h2{color:#FFD700;font-size:20px}
+#auth input{background:#0f0f20;border:1px solid #534AB7;border-radius:8px;padding:10px 16px;color:#fff;font-size:14px;width:260px;text-align:center}
+#auth button{background:#1a1060;border:0.5px solid #534AB7;border-radius:8px;padding:10px 28px;color:#AFA9EC;cursor:pointer;font-size:14px;width:260px}
+@media(max-width:600px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="auth">
+  <h2>Sixtho Analytics</h2>
+  <input type="password" id="pwd" placeholder="Пароль" onkeydown="if(event.key==='Enter')checkPwd()">
+  <button onclick="checkPwd()">Войти</button>
+  <div id="auth-err" style="color:#c44;font-size:12px"></div>
+</div>
+
+<div id="app" style="display:none">
+  <h1>Sixtho Analytics</h1>
+  <div class="subtitle" id="updated">Загрузка...</div>
+
+  <div class="period">
+    <button onclick="setPeriod(7)" id="p7">7 дней</button>
+    <button onclick="setPeriod(30)" id="p30" class="active">30 дней</button>
+    <button onclick="setPeriod(90)" id="p90">90 дней</button>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-val" id="k-logins">—</div><div class="kpi-lbl">Входов в игру</div><div class="kpi-sub" id="k-logins-sub"></div></div>
+    <div class="kpi"><div class="kpi-val" id="k-players">—</div><div class="kpi-lbl">Уникальных игроков</div><div class="kpi-sub" id="k-players-sub"></div></div>
+    <div class="kpi"><div class="kpi-val" id="k-purchases">—</div><div class="kpi-lbl">Покупок сенсов</div><div class="kpi-sub" id="k-purchases-sub"></div></div>
+    <div class="kpi"><div class="kpi-val" id="k-stars">—</div><div class="kpi-lbl">Звёзд получено</div><div class="kpi-sub" id="k-stars-sub"></div></div>
+    <div class="kpi"><div class="kpi-val" id="k-hints">—</div><div class="kpi-lbl">Подсказок куплено</div><div class="kpi-sub"></div></div>
+    <div class="kpi"><div class="kpi-val" id="k-revivals">—</div><div class="kpi-lbl">Возрождений</div><div class="kpi-sub"></div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card wide">
+      <div class="chart-title">Входы в игру по дням</div>
+      <canvas id="c-logins"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Уникальные игроки по дням</div>
+      <canvas id="c-players"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Покупки по дням (звёзды ⭐)</div>
+      <canvas id="c-stars"></canvas>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title">Прохождение уровней (сколько раз пройден каждый уровень)</div>
+      <canvas id="c-levels"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+// Простая защита паролем
+var PASS = 'sixtho2026';
+function checkPwd(){
+  if(document.getElementById('pwd').value===PASS){
+    document.getElementById('auth').style.display='none';
+    document.getElementById('app').style.display='block';
+    initApp();
+  }else{
+    document.getElementById('auth-err').textContent='Неверный пароль';
+  }
+}
+
+// Firebase
+firebase.initializeApp({
+  apiKey:"AIzaSyBMkKXCsognToR4MOTFXDhplgIzfBaKKVw",
+  databaseURL:"https://sixtho-f033b-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"sixtho-f033b"
+});
+var db=firebase.database();
+
+var period=30;
+var charts={};
+
+function setPeriod(days){
+  period=days;
+  ['p7','p30','p90'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  document.getElementById('p'+days).classList.add('active');
+  loadData();
+}
+
+function getDates(days){
+  var dates=[];
+  for(var i=days-1;i>=0;i--){
+    var d=new Date();d.setDate(d.getDate()-i);
+    dates.push(d.toISOString().slice(0,10));
+  }
+  return dates;
+}
+
+function chartColors(){
+  return {
+    line:'#534AB7',lineFill:'rgba(83,74,183,0.15)',
+    bar:'#EF9F27',bar2:'#1D9E75',bar3:'#FFD700'
+  };
+}
+
+function makeChart(id,type,labels,datasets){
+  if(charts[id])charts[id].destroy();
+  var ctx=document.getElementById(id).getContext('2d');
+  charts[id]=new Chart(ctx,{
+    type:type,
+    data:{labels:labels,datasets:datasets},
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#555',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'#444',font:{size:10}},grid:{color:'#1a1a30'}},
+        y:{ticks:{color:'#444',font:{size:10}},grid:{color:'#1a1a30'},beginAtZero:true}
+      }
+    }
+  });
+}
+
+async function loadData(){
+  var dates=getDates(period);
+  var snap=await db.ref('analytics').once('value');
+  var raw=snap.val()||{};
+
+  var loginsArr=[],playersArr=[],starsArr=[],purchasesArr=[];
+  var totals={logins:0,players:0,purchases:0,stars:0,hints:0,revivals:0};
+  var levelsTotal={};
+
+  dates.forEach(function(date){
+    var d=raw[date]||{};
+    loginsArr.push(d.logins||0);
+    var pCount=d.players?Object.keys(d.players).length:0;
+    playersArr.push(pCount);
+    starsArr.push(d.stars||0);
+    purchasesArr.push(d.purchases||0);
+    totals.logins+=d.logins||0;
+    totals.players+=pCount;
+    totals.purchases+=d.purchases||0;
+    totals.stars+=d.stars||0;
+    totals.hints+=d.hints||0;
+    totals.revivals+=d.revivals||0;
+    if(d.levels){Object.entries(d.levels).forEach(function(e){
+      levelsTotal[e[0]]=(levelsTotal[e[0]]||0)+e[1];
+    });}
+  });
+
+  // KPI
+  document.getElementById('k-logins').textContent=totals.logins;
+  document.getElementById('k-players').textContent=totals.players;
+  document.getElementById('k-purchases').textContent=totals.purchases;
+  document.getElementById('k-stars').textContent=totals.stars;
+  document.getElementById('k-hints').textContent=totals.hints;
+  document.getElementById('k-revivals').textContent=totals.revivals;
+
+  // Сравнение с предыдущим периодом
+  var prevDates=getDates(period*2).slice(0,period);
+  var prevLoginsTotal=prevDates.reduce(function(s,d){return s+((raw[d]&&raw[d].logins)||0);},0);
+  if(prevLoginsTotal>0){
+    var diff=Math.round((totals.logins-prevLoginsTotal)/prevLoginsTotal*100);
+    document.getElementById('k-logins-sub').textContent=(diff>=0?'▲+':'▼')+diff+'% vs пред.период';
+  }
+
+  // Подписи для оси X — только числа дней
+  var labels=dates.map(function(d){return d.slice(5);});
+  var c=chartColors();
+
+  makeChart('c-logins','line',labels,[{
+    label:'Входов',data:loginsArr,borderColor:c.line,backgroundColor:c.lineFill,tension:0.3,fill:true,pointRadius:2
+  }]);
+
+  makeChart('c-players','bar',labels,[{
+    label:'Игроков',data:playersArr,backgroundColor:c.bar2
+  }]);
+
+  makeChart('c-stars','bar',labels,[{
+    label:'Покупки (звёзды)',data:starsArr,backgroundColor:c.bar3
+  },{
+    label:'Кол-во покупок',data:purchasesArr,backgroundColor:c.bar,yAxisID:'y2'
+  }]);
+
+  // Уровни
+  var lvlLabels=[];var lvlData=[];
+  for(var i=1;i<=10;i++){
+    lvlLabels.push('Уровень '+i);
+    lvlData.push(levelsTotal[i]||0);
+  }
+  makeChart('c-levels','bar',lvlLabels,[{
+    label:'Раз пройден',data:lvlData,backgroundColor:function(ctx){
+      var v=ctx.parsed.y;var max=Math.max.apply(null,lvlData)||1;
+      var alpha=0.3+0.7*(v/max);
+      return 'rgba(83,74,183,'+alpha+')';
+    }
+  }]);
+
+  document.getElementById('updated').textContent='Обновлено: '+new Date().toLocaleString('ru');
+}
+
+function initApp(){loadData();}
+</script>
+</body>
+</html>
