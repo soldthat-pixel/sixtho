@@ -584,11 +584,11 @@ function startGame(){
 initPlayer();
 loadTop5();
 
-function showMsgRevival(title,desc,cbRevive,cbRollback){
+function showMsgRevival(title,desc,cost,cbRevive,cbRollback){
   $('m-ti').textContent=title;
   $('m-de').innerHTML=desc;
   $('m-tm').style.display='none';
-  $('m-bt').textContent='⚡ Возродиться · 15 сенсов';
+  $('m-bt').textContent='⚡ Возродиться · '+cost+' сенсов';
   $('m-bt').onclick=function(){$('m-bt').onclick=null;$('m-bt2').onclick=null;cbRevive();};
   $('m-bt2').style.display='block';
   $('m-bt2').onclick=function(){$('m-bt').onclick=null;$('m-bt2').onclick=null;cbRollback();};
@@ -658,7 +658,7 @@ function cardWord(n){
 function loadLevel(){
   var cfg=LEVELS[lvl];
   var lay=CARD_H[cfg.lvl];
-  sel=[];hintsLeft=cfg.hints;hintMode=false;busy=false;
+  sel=[];hintsLeft=cfg.hints;hintMode=false;hintBusy=false;busy=false;
   $('g-cf').classList.remove('busy');
   $('g-lv').textContent='Уровень '+cfg.lvl;
   $('g-lb').textContent='Найди '+cfg.correct+' '+cardWord(cfg.correct)+' Sixtho';
@@ -723,15 +723,20 @@ function onCard(card,i){
   updateConfirm();
 }
 
+var hintBusy=false; // блокировка повторных тапов при подсказке
+
 function doHint(card){
-  if(hintsLeft<=0)return;
-  // Списываем 1 сенс через сервер
+  if(hintsLeft<=0||hintBusy)return;
+  hintBusy=true; // блокируем сразу
   spendSens('hint',function(){
     hintsLeft--;hintMode=false;
     $('g-hn').classList.remove('on');
     $('g-hs').textContent='Нажми — укажи карточку';
     card.classList.add('flipped');
-    setTimeout(function(){card.classList.remove('flipped');},1500);
+    setTimeout(function(){
+      card.classList.remove('flipped');
+      hintBusy=false; // разблокируем после анимации
+    },1500);
     if(hintsLeft>0){$('g-hl').textContent='Проверить · 1 ⚡ (осталось: '+hintsLeft+')';}
     else{$('g-hn').style.display='none';}
   });
@@ -823,6 +828,7 @@ $('g-cf').addEventListener('click',function(){
         showMsgRevival(
           'Не угадал...',
           'Откат на уровень '+(dropTo===0?'1':dropTo+1)+'<br>Или возродись на уровне '+(curLvl+1)+' за '+revivalCost+' ⚡',
+          revivalCost,
           function(){
             spendSens('revival',function(d){
               if(d&&d.nextRevivalCost)revivalCostCurrent=d.nextRevivalCost;
