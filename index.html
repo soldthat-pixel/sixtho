@@ -128,7 +128,7 @@ body{background:#05050d;font-family:'Inter',sans-serif;display:flex;align-items:
 #nb-shop{width:100%;background:#1a1060;border:0.5px solid #534AB7;border-radius:12px;padding:12px;font-size:14px;color:#AFA9EC;cursor:pointer;font-family:'Cinzel',serif;text-align:center;margin-bottom:8px}
 #nb-close{width:100%;background:none;border:0.5px solid #333;border-radius:12px;padding:10px;font-size:13px;color:#555;cursor:pointer;text-align:center}
 /* Отладочный лог */
-#g-home{text-align:center;padding:4px;font-size:11px;color:#444;cursor:pointer;flex-shrink:0}
+#g-home{text-align:center;padding:5px;font-size:12px;color:#534AB7;cursor:pointer;flex-shrink:0;letter-spacing:0.5px}
 #g-home:active{color:#AFA9EC}
 #dbg{display:none!important}
 </style>
@@ -445,9 +445,21 @@ window.openShop=function(){
 };
 
 window.goHome=function(){
-  clearInterval(ticker);ticker=null;alive=false;
-  go('pg-start');
-  loadTop5();
+  try{
+    clearInterval(window._ticker);
+  }catch(e){}
+  var PGS=['pg-start','pg-game','pg-msg','pg-rating','pg-rules','pg-shop','pg-ref','pg-nobals'];
+  PGS.forEach(function(p){var el=document.getElementById(p);if(el)el.classList.remove('show');});
+  var s=document.getElementById('pg-start');if(s)s.classList.add('show');
+};
+
+window.openShop=function(){
+  var el=document.getElementById('pg-shop');
+  if(el){
+    var PGS=['pg-start','pg-game','pg-msg','pg-rating','pg-rules','pg-shop','pg-ref','pg-nobals'];
+    PGS.forEach(function(p){var e=document.getElementById(p);if(e)e.classList.remove('show');});
+    el.classList.add('show');
+  }
 };
 
 // Текущая страница
