@@ -786,6 +786,8 @@ $('g-cf').addEventListener('click',function(){
       if(levelTimes[reached]===undefined||secs<levelTimes[reached])levelTimes[reached]=secs;
       // Сохраняем в Firebase
       saveResult(reached,secs);
+      // Логируем прохождение уровня для аналитики
+      fetch(SERVER+'/log-level',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:TG_USER.id,level:reached,token:userToken})}).catch(function(){});
       // Реферальный бонус при прохождении уровня 2 и 5
       if(reached===2||reached===5){
         fetch(SERVER+'/ref-bonus',{
